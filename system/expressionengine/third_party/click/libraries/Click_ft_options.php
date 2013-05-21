@@ -30,10 +30,10 @@ class Click_ft_options
 	 * Preserved & defined here for clarity
 	 */
 	protected $_default = array(
-		'field_fmt' => 'none',
-		'field_show_fmt' => 'n',
-    	'field_placeholder' => 'n'
-    );
+		'field_fmt'			=> 'none',
+		'field_show_fmt'	=> 'n',
+		'field_placeholder'	=> 'n'
+	);
 
 	
 	/**
@@ -97,12 +97,12 @@ class Click_ft_options
 	public function __set($prop, $value)
 	{
 		// are we setting all options?
-		if ($prop == 'options' && is_array($value))
+		if ( $prop == 'options' && is_array($value) )
 		{
 			$this->_runtime = $this->_sanitise_options($value);
 		}
 		// just set an individual option?
-		elseif (in_array($prop, $this->_accessible))
+		elseif ( in_array($prop, $this->_accessible) )
 		{
 			$this->_runtime[$prop] = $this->_sanitise_option($prop, $value);
 		}
@@ -134,14 +134,15 @@ class Click_ft_options
 	protected function _sanitise_options($options)
 	{
 		// Trying to sanitise a non-array of options
-		if ( ! is_array($options)) {
+		if ( ! is_array($options) )
+		{
 			return array();
 		}
 
 		// reduce our $options array to only valid keys
-        $valid = array_flip(array_intersect(array_keys($this->_default), array_keys($options)));
-        
-        // now sanitise each value
+		$valid = array_flip(array_intersect(array_keys($this->_default), array_keys($options)));
+		
+		// now sanitise each value
 		foreach($valid as $option => $value)
 		{
 			$valid[$option] = $this->_sanitise_option($option, $options[$option]);
@@ -166,7 +167,7 @@ class Click_ft_options
 		switch($option) :
 
 			/* BOOLean - default NO */
-			case('placeholder') :
+			case ('placeholder') :
 				return ($value === TRUE OR preg_match('/1|true|on|yes|y/i', $value)) ? 'y' : 'n';
 			break;
 

@@ -23,39 +23,39 @@ class Click_ft extends EE_Fieldtype {
 	/**
 	 * Info for the CP
 	 */
-    public $info = array(
-        'name'    => CLICK_NAME,
-        'version' => CLICK_VER
-    );
+	public $info = array(
+		'name'		=> CLICK_NAME,
+		'version'	=> CLICK_VER
+	);
 
 
-    /**
-     * Holds our parsed fieldtype tag data
-     */
-    public $dataParts = array();
+	/**
+	 * Holds our parsed fieldtype tag data
+	 */
+	public $dataParts = array();
 
 
-    /**
-     * Key for cache, package loading, etc
-     */
-    public $package = 'click';
+	/**
+	 * Key for cache, package loading, etc
+	 */
+	public $package = 'click';
 
 
-    /**
-     * Placeholder text, if used
-     */
-    public $placeholder_text = "[link text](url &quot;optional title&quot;)";
+	/**
+	 * Placeholder text, if used
+	 */
+	public $placeholder_text = "[link text](url &quot;optional title&quot;)";
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Fieldtype Constructor
-     */
-    function __construct()
-    {
-        parent::EE_Fieldtype();
+	/**
+	 * Fieldtype Constructor
+	 */
+	function __construct()
+	{
+		parent::EE_Fieldtype();
 
 		// Load our language file
 		$this->EE->lang->loadfile($this->package);
@@ -66,7 +66,7 @@ class Click_ft extends EE_Fieldtype {
 		// Load helper
 		$this->EE->load->helper($this->package);
 
-    	// Load our options class
+		// Load our options class
 		$this->EE->load->library('click_ft_options');
 
 		// Set up our cache
@@ -75,102 +75,102 @@ class Click_ft extends EE_Fieldtype {
 			$this->EE->session->cache[$this->package] = array();
 		}
 		$this->cache = $this->EE->session->cache[$this->package];
-    }
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Display Field on Publish
-     */
-    function display_field($data, $cell = FALSE)
-    {
-    	// determine input name
-    	$name = $cell ? $this->cell_name : $this->field_name;
+	/**
+	 * Display Field on Publish
+	 */
+	function display_field($data, $cell = FALSE)
+	{
+		// determine input name
+		$name = $cell ? $this->cell_name : $this->field_name;
 
-    	// set our per-fieldtype options
-    	$options = new Click_ft_options($this->settings);
+		// set our per-fieldtype options
+		$options = new Click_ft_options($this->settings);
 
-    	// show placeholder text?
-    	$placeholder = '';
-    	if($options->field_placeholder == 'y')
-    	{
-    		$placeholder = " placeholder=\"" . $this->placeholder_text . "\" ";
-    	}
+		// show placeholder text?
+		$placeholder = '';
+		if($options->field_placeholder == 'y')
+		{
+			$placeholder = " placeholder=\"" . $this->placeholder_text . "\" ";
+		}
 
 		return "<input name=\"" . $name . "\" type=\"text\" value=\"" . $data . "\"" . $placeholder . " />";
-    }
+	}
 
-    /**
-     * Display Cell
-     */
-    function display_cell($data)
-    {
-        return $this->display_field($data, TRUE);
-    }
+	/**
+	 * Display Cell
+	 */
+	function display_cell($data)
+	{
+		return $this->display_field($data, TRUE);
+	}
 
-    /**
-     * Display Low Variable
-     */
-    function display_var_field($data)
-    {
+	/**
+	 * Display Low Variable
+	 */
+	function display_var_field($data)
+	{
 		if (! $this->var_id) return;
 
-    	// we need to prep our variable data first
-    	$data = form_prep($data);
+		// we need to prep our variable data first
+		$data = form_prep($data);
 
-        return $this->display_field($data);
-    }
-
-
-    // --------------------------------------------------------------------
+		return $this->display_field($data);
+	}
 
 
-    /**
-     * Save Custom Field
-     */
-    function save($data)
-    {
-        // Remove placeholder text as precaution?
-        return ($data == $this->placeholder_text) ? '' : $data;
-    }
+	// --------------------------------------------------------------------
 
 
-    // --------------------------------------------------------------------
+	/**
+	 * Save Custom Field
+	 */
+	function save($data)
+	{
+		// Remove placeholder text as precaution?
+		return ($data == $this->placeholder_text) ? '' : $data;
+	}
 
 
-    /**
-     * Save Matrix Cell
-     */
-    function save_cell($data)
-    {
-        return $this->save($data);
-    }
+	// --------------------------------------------------------------------
 
 
-    // --------------------------------------------------------------------
+	/**
+	 * Save Matrix Cell
+	 */
+	function save_cell($data)
+	{
+		return $this->save($data);
+	}
 
 
-    /**
-     * Save Low Variable
-     */
-    function save_var_field($data)
-    {
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Save Low Variable
+	 */
+	function save_var_field($data)
+	{
 		if (! $this->var_id) return;
 
-        return $this->save($data);
-    }
+		return $this->save($data);
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Display Custom Field settings
-     */
-    public function display_settings($data)
-    {
+	/**
+	 * Display Custom Field settings
+	 */
+	public function display_settings($data)
+	{
 		$settings = $this->_display_settings($data);
 
 		// load the table lib
@@ -180,39 +180,39 @@ class Click_ft extends EE_Fieldtype {
 		{
 			$this->EE->table->add_row($row);
 		}
-    }
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Display Matrix cell settings
-     */
+	/**
+	 * Display Matrix cell settings
+	 */
 	public function display_cell_settings($data)
 	{
 		return $this->_display_settings($data, true);
 	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Display Low Variable FT settings
-     */
+	/**
+	 * Display Low Variable FT settings
+	 */
 	public function display_var_settings($data)
 	{
 		return $this->_display_settings($data);
 	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Internal function used by all display_(var|cell)_settings() methods
-     */
+	/**
+	 * Internal function used by all display_(var|cell)_settings() methods
+	 */
 	protected function _display_settings($data, $cell = false)
 	{
 		// set our options based on what is passed via $data
@@ -235,21 +235,21 @@ class Click_ft extends EE_Fieldtype {
 	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Save Custom Field settings
-     *
-     * Also used when saving Matrix cell
-     */
+	/**
+	 * Save Custom Field settings
+	 *
+	 * Also used when saving Matrix cell
+	 */
 	function save_settings($data)
 	{
 		// take advantage of EE/CI security
 		$post = array();
 		foreach($_POST as $key => $value)
 		{
-		 	$post[$key] = $this->EE->input->post($key);
+			$post[$key] = $this->EE->input->post($key);
 		}
 
 		// Create our FT options
@@ -260,30 +260,30 @@ class Click_ft extends EE_Fieldtype {
 	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Save Low Variable FT settings
-     */
-    function save_var_settings($data)
-    {
-    	return $this->save_settings($data);
-    }
+	/**
+	 * Save Low Variable FT settings
+	 */
+	function save_var_settings($data)
+	{
+		return $this->save_settings($data);
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Pre-Process our $data before replacing template tags
-     *
-     * Use regular expression match to pull out URL, Text & Title values.
-     */
-    function pre_process($data)
-    {
+	/**
+	 * Pre-Process our $data before replacing template tags
+	 *
+	 * Use regular expression match to pull out URL, Text & Title values.
+	 */
+	function pre_process($data)
+	{
 
-    	// start by setting each to $data
+		// start by setting each to $data
 		$this->dataParts = array(
 			'link_text' => $data,
 			'url' => $data,
@@ -333,23 +333,23 @@ class Click_ft extends EE_Fieldtype {
 
 		// return original data untouched
 		return $data;
-    }
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Parse template tag
-     */
-    function replace_tag($data, $params = array(), $tagdata = FALSE)
-    {
-        if ($data == '') return;
+	/**
+	 * Parse template tag
+	 */
+	function replace_tag($data, $params = array(), $tagdata = FALSE)
+	{
+		if ($data == '') return;
 
-        if ( ! $this->dataParts)
-        {
-	        $data = $this->pre_process($data);
-        }
+		if ( ! $this->dataParts)
+		{
+			$data = $this->pre_process($data);
+		}
 
 		$result = "<a href=\"" . $this->dataParts['url'] . "\"";
 		if (isset($this->dataParts['title'])) {
@@ -359,109 +359,109 @@ class Click_ft extends EE_Fieldtype {
 		$result .= ">" . $this->dataParts['link_text'] . "</a>";
 
 		return $result;
-    }
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 
-    /**
-     * Parse any template tag modifiers
-     */
-    function replace_tag_catchall($data, $params = array(), $tagdata = FALSE, $modifier)
-    {
-        if ($data == '') return;
+	/**
+	 * Parse any template tag modifiers
+	 */
+	function replace_tag_catchall($data, $params = array(), $tagdata = FALSE, $modifier)
+	{
+		if ($data == '') return;
 
-        $method = '_replace_' . $modifier;
+		$method = '_replace_' . $modifier;
 
 		if( ! method_exists($this, $method) )
 		{
 			return $data;
 		}
 
-        if ( ! $this->dataParts)
-        {
-	        $data = $this->pre_process($data);
-        }
+		if ( ! $this->dataParts)
+		{
+			$data = $this->pre_process($data);
+		}
 
-        return $this->$method($data, $params, $tagdata);
-    }
-
-
-    // --------------------------------------------------------------------
+		return $this->$method($data, $params, $tagdata);
+	}
 
 
-    /**
-     * Parse template tag modifiers for URL data
-     */
-    protected function _replace_url($data, $params=array(), $tagdata=FALSE)
-    {
-        $data = $this->pre_process($data);
-
-        if ($data == '') return;
-
-    	return $this->dataParts['url'];
-    }
+	// --------------------------------------------------------------------
 
 
-    // --------------------------------------------------------------------
+	/**
+	 * Parse template tag modifiers for URL data
+	 */
+	protected function _replace_url($data, $params=array(), $tagdata=FALSE)
+	{
+		$data = $this->pre_process($data);
+
+		if ($data == '') return;
+
+		return $this->dataParts['url'];
+	}
 
 
-    /**
-     * Parse template tag modifiers for Text data
-     */
-    protected function _replace_text($data, $params=array(), $tagdata=FALSE)
-    {
-        if ($data == '') return;
-
-    	return $this->dataParts['link_text'];
-    }
+	// --------------------------------------------------------------------
 
 
-    // --------------------------------------------------------------------
+	/**
+	 * Parse template tag modifiers for Text data
+	 */
+	protected function _replace_text($data, $params=array(), $tagdata=FALSE)
+	{
+		if ($data == '') return;
+
+		return $this->dataParts['link_text'];
+	}
+
+
+	// --------------------------------------------------------------------
 
 
 
-    /**
-     * Parse template tag modifiers for Alternative Title data
-     */
-    protected function _replace_title($data, $params=array(), $tagdata=FALSE)
-    {
-        if ($data == '') return;
+	/**
+	 * Parse template tag modifiers for Alternative Title data
+	 */
+	protected function _replace_title($data, $params=array(), $tagdata=FALSE)
+	{
+		if ($data == '') return;
 
-    	return $this->dataParts['title'];
-    }
-
-
-    // --------------------------------------------------------------------
+		return $this->dataParts['title'];
+	}
 
 
-    /**
-     * Parse template tag modifiers for original fieldtype data
-     */
-    protected function _replace_original($data, $params=array(), $tagdata=FALSE)
-    {
-        if ($data == '') return;
-
-    	return $data;
-    }
+	// --------------------------------------------------------------------
 
 
-    // --------------------------------------------------------------------
+	/**
+	 * Parse template tag modifiers for original fieldtype data
+	 */
+	protected function _replace_original($data, $params=array(), $tagdata=FALSE)
+	{
+		if ($data == '') return;
+
+		return $data;
+	}
 
 
-    /**
-     * Replace the tag for Low Variables
-     */
-    function display_var_tag($data, $params=array(), $tagdata=FALSE)
-    {
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Replace the tag for Low Variables
+	 */
+	function display_var_tag($data, $params=array(), $tagdata=FALSE)
+	{
 		if (! $this->var_id) return;
 
-        return $this->replace_tag($data, $params, $tagdata);
-    }
+		return $this->replace_tag($data, $params, $tagdata);
+	}
 
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 }
 
