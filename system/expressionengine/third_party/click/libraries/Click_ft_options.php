@@ -192,7 +192,7 @@ class Click_ft_options
 		switch($option) :
 
 			/* BOOLean - default NO */
-			case ('placeholder') :
+			case ('field_placeholder') :
 				return ($value === TRUE OR preg_match('/1|true|on|yes|y/i', $value)) ? 'y' : 'n';
 			break;
 
