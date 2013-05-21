@@ -113,6 +113,30 @@ class Click_ft_options
 
 
 	/**
+	 * Return TRUE if option evals to no; else FALSE
+	 */
+	public function is_no($option)
+	{
+		return ($this->$option == 'n') ? TRUE : FALSE;
+	}
+
+
+	// ------------------------------------------------------
+
+
+	/**
+	 * Return TRUE if option evals to yes; else FALSE
+	 */
+	public function is_yes($option)
+	{
+		return ($this->$option == 'y') ? TRUE : FALSE;
+	}
+
+
+	// ------------------------------------------------------
+
+
+	/**
 	 * Return array of all options at runtime
 	 */
 	public function to_array()

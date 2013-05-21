@@ -94,7 +94,7 @@ class Click_ft extends EE_Fieldtype {
 
 		// show placeholder text?
 		$placeholder = '';
-		if($options->field_placeholder == 'y')
+		if($options->is_yes('field_placeholder'))
 		{
 			$placeholder = " placeholder=\"" . $this->placeholder_text . "\" ";
 		}
@@ -222,7 +222,7 @@ class Click_ft extends EE_Fieldtype {
 		$checkbox = form_checkbox(array(
 			'name'        => 'field_placeholder',
 			'value'       => 'y',
-			'checked'     => ($options->field_placeholder == 'y') ? TRUE : FALSE
+			'checked'     => ($options->is_yes('field_placeholder')) ? TRUE : FALSE
 		));
 
 		// A hidden field of the same name as the checkbox, to ensure something is always posted
