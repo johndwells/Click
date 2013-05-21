@@ -1,4 +1,14 @@
 <?php
+/**
+ * 
+ * Click Config file
+ * 
+ * @package	click
+ * @author	John D Wells <http://johndwells.com>
+ * @license	http://www.opensource.org/licenses/bsd-license.php BSD license
+ * @link	https://github.com/johndwells/click
+ */
+
 if (! defined('CLICK_VER'))
 {
 	define('CLICK_NAME', 'Click');

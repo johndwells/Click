@@ -47,3 +47,13 @@ Returns only the Alternative title part of the &lt;A&gt; link.
 ### `{custom_field_name:original}`
 
 Returns the original, unformatted contents of the custom field value.
+
+# Feature Roadmap
+
+ * Low Variables support for field modifiers?
+ * option to auto encode mailto: addresses
+ * Allow multiple
+ * JS validation?
+ * Confirm Safecracker support
+ * Confirm MSM support
+

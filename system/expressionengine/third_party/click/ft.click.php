@@ -3,16 +3,14 @@
 require_once PATH_THIRD . 'click/config.php';
 
 /**
- * Click
- *
- * Feature Roadmap:
- * - cache pre_process for performance?
- * - Low Variables support for field modifiers?
- * - option to auto encode mailto: addresses
- * - Allow multiple
- * - JS validation?
+ * 
+ * Click: A simple ExpressionEngine 2.x Fieldtype for creating links using Markdown formatting.
+ * 
+ * @package	click
+ * @author	John D Wells <http://johndwells.com>
+ * @license	http://www.opensource.org/licenses/bsd-license.php BSD license
+ * @link	https://github.com/johndwells/click
  */
-
 class Click_ft extends EE_Fieldtype {
 
 

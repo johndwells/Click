@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Helper functions
+ * Click Helper functions
+ * 
+ * @package	click
+ * @author	John D Wells <http://johndwells.com>
+ * @license	http://www.opensource.org/licenses/bsd-license.php BSD license
+ * @link	https://github.com/johndwells/click
  */
 
 // --------------------------------------------------------------------

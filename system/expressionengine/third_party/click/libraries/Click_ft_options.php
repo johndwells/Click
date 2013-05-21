@@ -1,9 +1,16 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
+ * Click FT Options Utility Class
+ * 
  * A helper class to handle the setting and getting of our fieldtype options.
  * Yes, this is perhaps over the top. But as this fieldtype grows, having
  * a framework in place to handle settings will be very helpful.
+ * 
+ * @package	click
+ * @author	John D Wells <http://johndwells.com>
+ * @license	http://www.opensource.org/licenses/bsd-license.php BSD license
+ * @link	https://github.com/johndwells/click
  */
 class Click_ft_options
 {
