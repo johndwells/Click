@@ -7,10 +7,16 @@ A simple ExpressionEngine 2.x Fieldtype for creating links using [Markdown](http
 * [On @devot-ee](http://devot-ee.com/add-ons/click)
 * [Forum Support](http://devot-ee.com/add-ons/support/click/)
 
+
+---
+
 # Installation
 
 1. Copy the contents of /system/expressionengine/third_party/click into your own system/expressionengine/third_party folder.
 2. Log into the CP and go to Add-Ons > Fieldtypes and install the "Click" fieldtype
+
+
+---
 
 # Custom Field Setup
 
@@ -21,6 +27,8 @@ When creating a **Click** custom field, the following option is available:
 When ticked, this will use the HTML5 `placeholder` attribute to show sample text for an empty field, demonstrating the acceptable format for a Markdown-formatted link:
 
 	[link text](url "optional title")
+
+---
 
 # Template Tags
 
@@ -48,11 +56,13 @@ Returns only the Alternative title part of the &lt;A&gt; link.
 
 Returns the original, unformatted contents of the custom field value.
 
+---
+
 # Feature Roadmap
 
  * Low Variables support for field modifiers?
  * option to auto encode mailto: addresses
- * Allow multiple
+ * Allow multiple links
  * JS validation?
  * Confirm Safecracker support
  * Confirm MSM support

@@ -76,13 +76,15 @@ class Click_ft extends EE_Fieldtype {
 		}
 		$this->cache = $this->EE->session->cache[$this->package];
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Display Field on Publish
+	 *
+	 * @param 	string 	The current variable data.
+	 * @param 	bool 	TRUE if field is a Matrix cell; else FALSE
+	 * @return 	string 	A string containing the HTML to be used in the publish field
 	 */
 	function display_field($data, $cell = FALSE)
 	{
@@ -94,84 +96,104 @@ class Click_ft extends EE_Fieldtype {
 
 		// show placeholder text?
 		$placeholder = '';
-		if($options->is_yes('field_placeholder'))
+		if ( $options->is_yes('field_placeholder') )
 		{
 			$placeholder = " placeholder=\"" . $this->placeholder_text . "\" ";
 		}
 
 		return "<input name=\"" . $name . "\" type=\"text\" value=\"" . $data . "\"" . $placeholder . " />";
 	}
+	// --------------------------------------------------------------------
+
 
 	/**
 	 * Display Cell
+	 *
+	 * @param 	string 	The current variable data.
+	 * @return 	string 	A string containing the HTML to be used in the publish field
 	 */
 	function display_cell($data)
 	{
 		return $this->display_field($data, TRUE);
 	}
+	// --------------------------------------------------------------------
+
 
 	/**
 	 * Display Low Variable
+	 *
+	 * @param 	string 	The current variable data.
+	 * @return 	string 	A string containing the HTML to be used in the publish field
 	 */
 	function display_var_field($data)
 	{
-		if (! $this->var_id) return;
+		if ( ! $this->var_id)
+		{
+			return;
+		}
 
 		// we need to prep our variable data first
 		$data = form_prep($data);
 
 		return $this->display_field($data);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Save Custom Field
+	 *
+	 * @param 	string 	The posted variable data.
+	 * @return 	string 	A string containing the modified variable data to be saved.
 	 */
 	function save($data)
 	{
 		// Remove placeholder text as precaution?
 		return ($data == $this->placeholder_text) ? '' : $data;
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Save Matrix Cell
+	 *
+	 * @param 	string 	The posted variable data.
+	 * @return 	string 	A string containing the modified variable data to be saved.
 	 */
 	function save_cell($data)
 	{
 		return $this->save($data);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Save Low Variable
+	 *
+	 * @param 	string 	The posted variable data.
+	 * @return 	string 	A string containing the modified variable data to be saved.
 	 */
 	function save_var_field($data)
 	{
-		if (! $this->var_id) return;
+		if ( ! $this->var_id)
+		{
+			return;
+		}
 
 		return $this->save($data);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Display Custom Field settings
+	 *
+	 * @param 	array 	The current variable’s settings.
+	 * @return 	string 	An array containing two elements: the name/label in the first element, the form element(s) in the second.
 	 */
-	public function display_settings($data)
+	public function display_settings($settings)
 	{
-		$settings = $this->_display_settings($data);
+		$settings = $this->_display_settings($settings);
 
 		// load the table lib
 		$this->EE->load->library('table');
@@ -181,42 +203,46 @@ class Click_ft extends EE_Fieldtype {
 			$this->EE->table->add_row($row);
 		}
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Display Matrix cell settings
+	 *
+	 * @param 	array 	The current variable’s settings.
+	 * @return 	string 	An array containing two elements: the name/label in the first element, the form element(s) in the second.
 	 */
-	public function display_cell_settings($data)
+	public function display_cell_settings($settings)
 	{
-		return $this->_display_settings($data, true);
+		return $this->_display_settings($settings, true);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Display Low Variable FT settings
+	 *
+	 * @param 	array 	The current variable’s settings.
+	 * @return 	string 	An array containing two elements: the name/label in the first element, the form element(s) in the second.
 	 */
-	public function display_var_settings($data)
+	public function display_var_settings($settings)
 	{
-		return $this->_display_settings($data);
+		return $this->_display_settings($settings);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Internal function used by all display_(var|cell)_settings() methods
+	 *
+	 * @param 	array 	The current variable’s settings.
+	 * @param 	bool 	TRUE if field is a Matrix cell; else FALSE
+	 * @return 	string 	An array containing two elements: the name/label in the first element, the form element(s) in the second.
 	 */
-	protected function _display_settings($data, $cell = false)
+	protected function _display_settings($settings, $cell = false)
 	{
-		// set our options based on what is passed via $data
-		$options = new Click_ft_options($data);
+		// set our options based on what is passed via $settings
+		$options = new Click_ft_options($settings);
 
 		// Here's our checkbox field
 		$checkbox = form_checkbox(array(
@@ -233,8 +259,6 @@ class Click_ft extends EE_Fieldtype {
 			array(lang('placeholder'), $hidden . "\n" . $checkbox),
 		);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
@@ -242,8 +266,11 @@ class Click_ft extends EE_Fieldtype {
 	 * Save Custom Field settings
 	 *
 	 * Also used when saving Matrix cell
+	 *
+	 * @param 	array 	The posted variable's settings.
+	 * @return 	string 	An associative array containing the settings to be saved.
 	 */
-	function save_settings($data)
+	function save_settings($settings)
 	{
 		// take advantage of EE/CI security
 		$post = array();
@@ -258,20 +285,19 @@ class Click_ft extends EE_Fieldtype {
 		// Return as array
 		return $options->to_array();
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Save Low Variable FT settings
+	 *
+	 * @param 	array 	The posted variable's settings.
+	 * @return 	string 	An associative array containing the settings to be saved.
 	 */
-	function save_var_settings($data)
+	function save_var_settings($settings)
 	{
-		return $this->save_settings($data);
+		return $this->save_settings($settings);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
@@ -279,15 +305,18 @@ class Click_ft extends EE_Fieldtype {
 	 * Pre-Process our $data before replacing template tags
 	 *
 	 * Use regular expression match to pull out URL, Text & Title values.
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @return 	string 	Data of fieldtype (unedited)
 	 */
 	function pre_process($data)
 	{
 
 		// start by setting each to $data
 		$this->dataParts = array(
-			'link_text' => $data,
-			'url' => $data,
-			'title' => $data
+			'link_text'		=> $data,
+			'url'			=> $data,
+			'title'			=> $data
 		);
 
 		# [link text](url "optional title")
@@ -315,7 +344,7 @@ class Click_ft extends EE_Fieldtype {
 			}xs', $data, $matches);
 
 		// If matches, set each part
-		if($matches)
+		if ( $matches )
 		{
 			$link_text		=  $matches[2];
 			$url			=  $matches[3] == '' ? $matches[4] : $matches[3];
@@ -325,34 +354,42 @@ class Click_ft extends EE_Fieldtype {
 			$title = click_encodeAttribute($title);
 
 			$this->dataParts = array(
-				'link_text' => $link_text,
-				'url' => $url,
-				'title' => $title
+				'link_text'		=> $link_text,
+				'url'			=> $url,
+				'title'			=> $title
 			);
 		}
 
 		// return original data untouched
 		return $data;
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Parse template tag
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The formatted link
 	 */
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
-		if ($data == '') return;
+		if ( $data == '' )
+		{
+			return;
+		}
 
-		if ( ! $this->dataParts)
+		if ( ! $this->dataParts )
 		{
 			$data = $this->pre_process($data);
 		}
 
 		$result = "<a href=\"" . $this->dataParts['url'] . "\"";
-		if (isset($this->dataParts['title'])) {
+
+		if ( isset($this->dataParts['title']) )
+		{
 			$result .=  " title=\"" . $this->dataParts['title'] . "\"";
 		}
 
@@ -360,17 +397,24 @@ class Click_ft extends EE_Fieldtype {
 
 		return $result;
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Parse any template tag modifiers
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @param 	string 	The tag modifier
+	 * @return 	string 	The contents of the requested modifier method
 	 */
 	function replace_tag_catchall($data, $params = array(), $tagdata = FALSE, $modifier)
 	{
-		if ($data == '') return;
+		if ( $data == '' )
+		{
+			return;
+		}
 
 		$method = '_replace_' . $modifier;
 
@@ -379,90 +423,95 @@ class Click_ft extends EE_Fieldtype {
 			return $data;
 		}
 
-		if ( ! $this->dataParts)
+		if ( ! $this->dataParts )
 		{
 			$data = $this->pre_process($data);
 		}
 
 		return $this->$method($data, $params, $tagdata);
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Parse template tag modifiers for URL data
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The URL part of the field content
 	 */
-	protected function _replace_url($data, $params=array(), $tagdata=FALSE)
+	protected function _replace_url($data, $params = array(), $tagdata = FALSE)
 	{
-		$data = $this->pre_process($data);
-
-		if ($data == '') return;
-
 		return $this->dataParts['url'];
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Parse template tag modifiers for Text data
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The Text part of the field content
 	 */
-	protected function _replace_text($data, $params=array(), $tagdata=FALSE)
+	protected function _replace_text($data, $params = array(), $tagdata = FALSE)
 	{
-		if ($data == '') return;
-
 		return $this->dataParts['link_text'];
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 
 	/**
 	 * Parse template tag modifiers for Alternative Title data
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The Title part of the field content
 	 */
-	protected function _replace_title($data, $params=array(), $tagdata=FALSE)
+	protected function _replace_title($data, $params = array(), $tagdata = FALSE)
 	{
-		if ($data == '') return;
-
 		return $this->dataParts['title'];
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Parse template tag modifiers for original fieldtype data
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The original field content
 	 */
-	protected function _replace_original($data, $params=array(), $tagdata=FALSE)
+	protected function _replace_original($data, $params = array(), $tagdata = FALSE)
 	{
-		if ($data == '') return;
-
 		return $data;
 	}
-
-
 	// --------------------------------------------------------------------
 
 
 	/**
 	 * Replace the tag for Low Variables
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The formatted link
 	 */
-	function display_var_tag($data, $params=array(), $tagdata=FALSE)
+	public function display_var_tag($data, $params = array(), $tagdata = FALSE)
 	{
-		if (! $this->var_id) return;
+		if ( ! $this->var_id )
+		{
+			return;
+		}
 
 		return $this->replace_tag($data, $params, $tagdata);
 	}
-
-
 	// --------------------------------------------------------------------
-
 }
 
 /* End of file ft.click.php */

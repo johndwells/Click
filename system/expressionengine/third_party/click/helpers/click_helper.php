@@ -9,7 +9,9 @@
  * @link	https://github.com/johndwells/click
  */
 
+
 // --------------------------------------------------------------------
+
 
 /**
  * Borrowed from Markdown.php
@@ -23,8 +25,8 @@ if ( ! function_exists('click_encodeAttribute'))
 		return $text;
 	}
 }
-
 // --------------------------------------------------------------------
+
 
 /**
  * Borrowed from Markdown.php
@@ -44,7 +46,6 @@ if ( ! function_exists('click_encodeAmpsAndAngles'))
 		return $text;
 	}
 }
-
 // --------------------------------------------------------------
 
 /* End of file click_helper.php */

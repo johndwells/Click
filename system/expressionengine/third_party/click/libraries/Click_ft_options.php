@@ -51,21 +51,24 @@ class Click_ft_options
 	 * Constructor
 	 *
 	 * Takes an array and sets it to options
+	 *
+	 * @param	array	Array of options to set
+	 * @return	void
 	 */
 	public function __construct($options = array())
 	{
 		$this->options = $options;
 	}
-
-
 	// ------------------------------------------------------
 
 
 	/**
 	 * Magic Getter
 	 *
+	 * Will first look for a runtime option; then for a default option.
+	 *
 	 * @param 	string	Name of option to retrieve
-	 * @return 	mixed	Array of all options, value of individual option, or NULL if not valid
+	 * @return 	mixed	Value of individual option, or NULL if not valid
 	 */
 	public function __get($prop)
 	{
@@ -84,8 +87,6 @@ class Click_ft_options
 		// Nothing found.
 		return NULL;
 	}
-
-
 	// ------------------------------------------------------
 
 
@@ -93,6 +94,8 @@ class Click_ft_options
 	 * Magic Setter
 	 *
 	 * @param 	string	Name of option to set
+	 * @param 	string	Value of option to set
+	 * @return	void
 	 */
 	public function __set($prop, $value)
 	{
@@ -107,45 +110,45 @@ class Click_ft_options
 			$this->_runtime[$prop] = $this->_sanitise_option($prop, $value);
 		}
 	}
-
-
 	// ------------------------------------------------------
 
 
 	/**
 	 * Return TRUE if option evals to no; else FALSE
+	 *
+	 * @param 	string 	Name of option to evaluate
+	 * @return 	bool 	TRUE if eval to 'n'; else FALSE
 	 */
 	public function is_no($option)
 	{
 		return ($this->$option == 'n') ? TRUE : FALSE;
 	}
-
-
 	// ------------------------------------------------------
 
 
 	/**
 	 * Return TRUE if option evals to yes; else FALSE
+	 *
+	 * @param 	string 	Name of option to evaluate
+	 * @return 	bool 	TRUE if eval to 'y'; else FALSE
 	 */
 	public function is_yes($option)
 	{
 		return ($this->$option == 'y') ? TRUE : FALSE;
 	}
-
-
 	// ------------------------------------------------------
 
 
 	/**
 	 * Return array of all options at runtime
+	 *
+	 * @return 	array 	Array of options that is a combination of defaults & runtime
 	 */
 	public function to_array()
 	{
 		// merge with defaults first
 		return array_merge($this->_default, $this->_runtime);
 	}
-
-
 	// ------------------------------------------------------
 
 
@@ -174,8 +177,6 @@ class Click_ft_options
 		
 		return $valid;
 	}
-
-
 	// ------------------------------------------------------
 
 
@@ -202,10 +203,7 @@ class Click_ft_options
 		
 		endswitch;
 	}
-
-
-	// ------------------------------------------------------
-	
+	// ------------------------------------------------------	
 }
 
 /* End of file Click_ft_options.php */
