@@ -4,9 +4,6 @@
 A simple ExpressionEngine 2.x Fieldtype for creating links using [Markdown](http://daringfireball.net/projects/markdown/ "Markdown") formatting.
 
 * [Full Documentation](https://github.com/johndwells/Click)
-* [On @devot-ee](http://devot-ee.com/add-ons/click)
-* [Forum Support](http://devot-ee.com/add-ons/support/click/)
-
 
 ---
 
