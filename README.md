@@ -3,7 +3,49 @@
 
 A simple ExpressionEngine 2.x Fieldtype for creating links using [Markdown](http://daringfireball.net/projects/markdown/ "Markdown") formatting.
 
+* Version 0.9.0 (beta)
 * [Full Documentation](https://github.com/johndwells/Click)
+
+---
+
+# Introduction
+
+**Click** was built to easily make *one or more* arbitrary hyperlinks, without needing to know HTML, and with full control over markup in your templates.
+
+Click leverages [Markdown](http://daringfireball.net/projects/markdown/ "Markdown") as the formatting syntax to write your links. So it can turn this:
+
+	[Google it!](http://google.com "Google")
+	[Bing it!](http://bing.com "Bing")
+	[Ask it!](http://ask.com "Ask")
+
+Into this:
+
+	<ul>
+		<li><a href="http://google.com" title="Google">Google it!</a></li>
+		<li><a href="http://bing.com" title="Bing">Bing it!</a></li>
+		<li><a href="http://ask.com" title="Ask">Ask it!</a></li>
+	</ul>
+
+Simply by writing this:
+
+	<ul>
+		{my_click_field}
+			<li>{click}</li>
+		{/my_click_field}
+	</ul>
+
+Or this:
+
+	<ul>
+		{my_click_field}
+			<li><a href="{url}" title="{title}">{text}</a></li>
+		{/my_click_field}
+	</ul>
+
+Or actually, even this:
+
+	{my_click_field:ul}
+
 
 ---
 
@@ -49,7 +91,7 @@ Return the field as a fully formatted &lt;A&gt; link tag:
 
 ## Tag Pair
 
-Click's tag pair is used to iterate & display multilpe links, in the case where multiple links are enabled.
+Click's tag pair is used to iterate & display multiple links, in the case where multiple links are enabled.
 
 	<ul class="nav">
 		{my_click_field prefix="click:"}
@@ -161,7 +203,7 @@ Returns the original, unformatted contents of the entire custom field.
 
 ---
 
-# Feature Roadmap
+# Feature Roadmap (Maybe?)
 
  * Low Variables support for field modifiers?
  * option to auto encode mailto: addresses

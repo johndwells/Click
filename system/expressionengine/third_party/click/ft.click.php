@@ -349,7 +349,7 @@ class Click_ft extends EE_Fieldtype {
 			if ( $matches )
 			{
 				$original		=  $matches[1];
-				$link_text		=  $matches[2];
+				$text			=  $matches[2];
 				$url			=  $matches[3] == '' ? $matches[4] : $matches[3];
 				$title			=& $matches[7];
 
@@ -358,7 +358,7 @@ class Click_ft extends EE_Fieldtype {
 
 				$this->dataParts[] = array(
 					'original'		=> $original,
-					'link_text'		=> $link_text,
+					'text'			=> $text,
 					'url'			=> $url,
 					'title'			=> $title
 				);
@@ -368,7 +368,7 @@ class Click_ft extends EE_Fieldtype {
 			{
 				$this->dataParts[] = array(
 					'original'		=> $line,
-					'link_text'		=> $line,
+					'text'			=> $line,
 					'url'			=> $line,
 					'title'			=> $line
 				);
@@ -480,7 +480,7 @@ class Click_ft extends EE_Fieldtype {
 			$result .=  " title=\"" . $this->dataParts[$index]['title'] . "\"";
 		}
 
-		$result .= ">" . $this->dataParts[$index]['link_text'] . "</a>";
+		$result .= ">" . $this->dataParts[$index]['text'] . "</a>";
 
 		return $result;
 	}
@@ -714,7 +714,7 @@ class Click_ft extends EE_Fieldtype {
 	 */
 	protected function _replace_text($index = 0)
 	{
-		return $this->dataParts[$index]['link_text'];
+		return $this->dataParts[$index]['text'];
 	}
 	// --------------------------------------------------------------------
 
