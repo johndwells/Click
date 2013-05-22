@@ -396,6 +396,12 @@ class Click_ft extends EE_Fieldtype {
 			return;
 		}
 
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
+		}
+
 		// set our per-fieldtype options
 		$options = new Click_ft_options($this->settings);
 
@@ -496,6 +502,12 @@ class Click_ft extends EE_Fieldtype {
 			return '';
 		}
 
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
+		}
+
 		// build our method
 		$method = '_replace_' . $modifier;
 
@@ -519,6 +531,12 @@ class Click_ft extends EE_Fieldtype {
 			return '';
 		}
 
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
+		}
+
 		// build our method
 		$method = '_replace_' . $modifier;
 
@@ -540,6 +558,12 @@ class Click_ft extends EE_Fieldtype {
 		if ( $data == '' )
 		{
 			return '';
+		}
+
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
 		}
 
 		// build our method
@@ -572,6 +596,12 @@ class Click_ft extends EE_Fieldtype {
 			return '';
 		}
 
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
+		}
+
 		// build our method
 		$method = '_replace_' . $modifier;
 
@@ -602,6 +632,12 @@ class Click_ft extends EE_Fieldtype {
 			return 0;
 		}
 
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
+		}
+
 		return count($this->dataParts);
 	}
 
@@ -619,6 +655,12 @@ class Click_ft extends EE_Fieldtype {
 		if ( $data == '' )
 		{
 			return;
+		}
+
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
 		}
 
 		// do we have two modifiers to parse?
@@ -716,6 +758,12 @@ class Click_ft extends EE_Fieldtype {
 		if ( ! $this->var_id )
 		{
 			return;
+		}
+
+		// precautionary prep?
+		if( ! $this->dataParts)
+		{
+			$this->pre_process($data);
 		}
 
 		return $this->replace_tag($data, $params, $tagdata);
