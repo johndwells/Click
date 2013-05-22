@@ -205,9 +205,8 @@ Returns the original, unformatted contents of the entire custom field.
 
 # Feature Roadmap (Maybe?)
 
- * Low Variables support for field modifiers?
  * option to auto encode mailto: addresses
- * JS validation?
+ * JS validation
  * Confirm Safecracker support
  * Confirm MSM support
 
