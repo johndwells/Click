@@ -1,5 +1,6 @@
 <?php
 
 $lang = array(
-	'placeholder' => 'Show hint text as placeholder?'
+	'placeholder' => 'Show hint text as placeholder?',
+	'allow_multiple' => 'Allow multiple links?'
 );

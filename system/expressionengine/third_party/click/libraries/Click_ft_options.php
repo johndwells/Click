@@ -21,6 +21,7 @@ class Click_ft_options
 	 */
 	protected $_accessible = array(
 		'field_placeholder',
+		'field_allow_multiple',
 	);
 	
 	
@@ -30,9 +31,10 @@ class Click_ft_options
 	 * Preserved & defined here for clarity
 	 */
 	protected $_default = array(
-		'field_fmt'			=> 'none',
-		'field_show_fmt'	=> 'n',
-		'field_placeholder'	=> 'n'
+		'field_fmt'				=> 'none',
+		'field_show_fmt'		=> 'n',
+		'field_placeholder'		=> 'n',
+		'field_allow_multiple'	=> 'n'
 	);
 
 	
@@ -192,6 +194,7 @@ class Click_ft_options
 		switch($option) :
 
 			/* BOOLean - default NO */
+			case ('field_allow_multiple') :
 			case ('field_placeholder') :
 				return ($value === TRUE OR preg_match('/1|true|on|yes|y/i', $value)) ? 'y' : 'n';
 			break;

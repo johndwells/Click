@@ -17,7 +17,7 @@ A simple ExpressionEngine 2.x Fieldtype for creating links using [Markdown](http
 
 # Custom Field Setup
 
-When creating a **Click** custom field, the following option is available:
+When creating a Click custom field, the following options are available:
 
 #### Show hint text as placeholder? (checkbox)
 
@@ -25,33 +25,139 @@ When ticked, this will use the HTML5 `placeholder` attribute to show sample text
 
 	[link text](url "optional title")
 
+
+#### Allow multiple links? (checkbox)
+
+When ticked, the custom field will allow for multiple links, each separated by a new line.
+
 ---
 
-# Template Tags
+# Field Tags
 
-### `{custom_field_name}`
+The following tags are available for your Click field within `{exp:channel:entries}` tag pairs.
 
-This returns a formatted &lt;A&gt; link tag.
+## Single Tag
 
-## Tag Modifiers
+Return the field as a fully formatted &lt;A&gt; link tag:
 
-The following tag modifiers are used to retrieve pieces of the link:
+	{my_click_field}
+	
+	// renders something like:
+	<a href="http:domain.com" title="Alternative Title">Link Text</a>
 
-### `{custom_field_name:url}`
+**Note: In the case where multiple links are allowed for the field, the Single Tag will only return the first link.**
 
-Returns only the URL.
+## Tag Pair
 
-### `{custom_field_name:text}`
+Click's tag pair is used to iterate & display multilpe links, in the case where multiple links are enabled.
 
-Returns only the readable Text part of the &lt;A&gt; link.
+	<ul class="nav">
+		{my_click_field prefix="click:"}
+			<li class="{switch='odd|even'}"><a href="{click:url}" title="{click:title}">{click:text}</a></li>
+		{/my_click_field}
+	</ul>
 
-### `{custom_field_name:title}`
+### Tag Parameters
 
-Returns only the Alternative title part of the &lt;A&gt; link.
+#### `backspace=`
 
-### `{custom_field_name:original}`
+Strip the last X characters from the tag output.
 
-Returns the original, unformatted contents of the custom field value.
+	{my_click_field backspace="2"}{click}, {/my_click_field}
+
+#### `var_prefix=`
+
+Specify Click to only parse variables which have the specified prefix. Useful in case of naming conflicts between nested fields.
+
+	{my_click_field prefix="click"}{click:url}, {/my_click_field}
+
+#### `limit=`
+
+Specify the maximum number of links to return.
+
+	{my_click_field limit="2"}{click}, {/my_click_field}
+
+### Variable Tags
+
+Within the Tag Pair, the following variable tags are available (note these may change if you have specified a `var_prefix=`).
+
+#### `{click}`
+
+Returns the fully rendered &lt;A&gt; link.
+
+	{my_click_field}{click}, {/my_click_field}
+
+#### `{text}`
+
+Returns the readable Text portion of the &lt;A&gt; link.
+
+	{my_click_field}{text}, {/my_click_field}
+
+#### `{title}`
+
+Returns the Alternative Title portion of the &lt;A&gt; link.
+
+	{my_click_field}{title}, {/my_click_field}
+
+#### `{url}`
+
+Returns the URL portion of the &lt;A&gt; link.
+
+	{my_click_field}{url}, {/my_click_field}
+
+## :total Tag
+
+Returns the total number of links.
+
+	{my_click_field:total}
+
+## :first Tag
+
+In the case where multiple links are allowed for a field, this will return the first link tag:
+
+	{my_click_field:first}
+
+## :last Tag
+
+In the case where multiple links are allowed for a field, this will return the last link tag:
+
+	{my_click_field:last}
+
+## :ul Tag
+
+Return an automatically-generated unordered list of links.
+
+	{my_click_field:ul}
+
+## :ol Tag
+
+Return an automatically-generated ordered list of links.
+
+	{my_click_field:ol}
+
+## :url Tag
+
+Returns only the URL of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
+
+	{my_click_field:url}
+
+## :text Tag
+
+Returns only the readable Text part of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
+
+	{my_click_field:text}
+
+## :title Tag
+
+Returns the Alternative title part of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
+
+	{my_click_field:title}
+
+## :original Tag
+
+Returns the original, unformatted contents of the entire custom field.
+
+	{my_click_field:original}
 
 ---
 
@@ -59,7 +165,6 @@ Returns the original, unformatted contents of the custom field value.
 
  * Low Variables support for field modifiers?
  * option to auto encode mailto: addresses
- * Allow multiple links
  * JS validation?
  * Confirm Safecracker support
  * Confirm MSM support

@@ -17,7 +17,7 @@ class Click_ft extends EE_Fieldtype {
 	/**
 	 * Tells EE if can be parsed as tag pair
 	 */
-	public $has_array_data = FALSE;
+	public $has_array_data = TRUE;
 
 
 	/**
@@ -30,7 +30,7 @@ class Click_ft extends EE_Fieldtype {
 
 
 	/**
-	 * Holds our parsed fieldtype tag data
+	 * Array of associated array of link parts
 	 */
 	public $dataParts = array();
 
@@ -101,7 +101,15 @@ class Click_ft extends EE_Fieldtype {
 			$placeholder = " placeholder=\"" . $this->placeholder_text . "\" ";
 		}
 
-		return "<input name=\"" . $name . "\" type=\"text\" value=\"" . $data . "\"" . $placeholder . " />";
+		// allow multiple lines?
+		if($options->is_yes('field_allow_multiple'))
+		{
+			return "<textarea rows=\"5\" name=\"" . $name . "\"" . $placeholder . ">" . $data . "</textarea>";
+		}
+		else
+		{
+			return "<input name=\"" . $name . "\" type=\"text\" value=\"" . $data . "\"" . $placeholder . " />";
+		}
 	}
 	// --------------------------------------------------------------------
 
@@ -245,7 +253,7 @@ class Click_ft extends EE_Fieldtype {
 		$options = new Click_ft_options($settings);
 
 		// Here's our checkbox field
-		$checkbox = form_checkbox(array(
+		$placeholder_checkbox = form_checkbox(array(
 			'name'        => 'field_placeholder',
 			'value'       => 'y',
 			'checked'     => ($options->is_yes('field_placeholder')) ? TRUE : FALSE
@@ -253,10 +261,23 @@ class Click_ft extends EE_Fieldtype {
 
 		// A hidden field of the same name as the checkbox, to ensure something is always posted
 		// (must be returned first in DOM order)
-		$hidden = form_hidden('field_placeholder', 'n');
+		$placeholder_hidden = form_hidden('field_placeholder', 'n');
+
+
+		// Here's our checkbox field
+		$allow_multiple_checkbox = form_checkbox(array(
+			'name'        => 'field_allow_multiple',
+			'value'       => 'y',
+			'checked'     => ($options->is_yes('field_allow_multiple')) ? TRUE : FALSE
+		));
+
+		// A hidden field of the same name as the checkbox, to ensure something is always posted
+		// (must be returned first in DOM order)
+		$allow_multiple_hidden = form_hidden('field_allow_multiple', 'n');
 
 		return array(
-			array(lang('placeholder'), $hidden . "\n" . $checkbox),
+			array(lang('placeholder'), $placeholder_hidden . "\n" . $placeholder_checkbox),
+			array(lang('allow_multiple'), $allow_multiple_hidden . "\n" . $allow_multiple_checkbox),
 		);
 	}
 	// --------------------------------------------------------------------
@@ -309,55 +330,49 @@ class Click_ft extends EE_Fieldtype {
 	 * @param 	string 	Data of fieldtype
 	 * @return 	string 	Data of fieldtype (unedited)
 	 */
-	function pre_process($data)
+	function pre_process($data = '')
 	{
+		// set our per-fieldtype options
+		$options = new Click_ft_options($this->settings);
 
-		// start by setting each to $data
-		$this->dataParts = array(
-			'link_text'		=> $data,
-			'url'			=> $data,
-			'title'			=> $data
-		);
+		// turn our data into an array
+		$as_array =  (! is_array($data)) ? array_filter(preg_split("/[\r\n]+/", $data)) : $data;
 
-		# [link text](url "optional title")
-		preg_match('{
-			(				# wrap whole match in $1
-			  \[
-				((?>[^\[\]]+|\[\])*)	# link text = $2
-			  \]
-			  \(			# literal paren
-				[ \n]*
-				(?:
-					<(.+?)>	# href = $3
-				|
-					((?>[^()\s]+|\((?>\)))*)	# href = $4
-				)
-				[ \n]*
-				(			# $5
-				  ([\'"])	# quote char = $6
-				  (.*?)		# Title = $7
-				  \6		# matching quote
-				  [ \n]*	# ignore any spaces/tabs between closing quote and )
-				)?			# title is optional
-			  \)
-			)
-			}xs', $data, $matches);
+		// clear our dataParts as precaution
+		$this->dataParts = array();
 
-		// If matches, set each part
-		if ( $matches )
+		foreach($as_array as $line)
 		{
-			$link_text		=  $matches[2];
-			$url			=  $matches[3] == '' ? $matches[4] : $matches[3];
-			$title			=& $matches[7];
+			$matches = click_doAnchors($line);
 
-			$url = click_encodeAttribute($url);
-			$title = click_encodeAttribute($title);
+			// If matches, set each part
+			if ( $matches )
+			{
+				$original		=  $matches[1];
+				$link_text		=  $matches[2];
+				$url			=  $matches[3] == '' ? $matches[4] : $matches[3];
+				$title			=& $matches[7];
 
-			$this->dataParts = array(
-				'link_text'		=> $link_text,
-				'url'			=> $url,
-				'title'			=> $title
-			);
+				$url = click_encodeAttribute($url);
+				$title = click_encodeAttribute($title);
+
+				$this->dataParts[] = array(
+					'original'		=> $original,
+					'link_text'		=> $link_text,
+					'url'			=> $url,
+					'title'			=> $title
+				);
+			}
+			// just set every part to same
+			else
+			{
+				$this->dataParts[] = array(
+					'original'		=> $line,
+					'link_text'		=> $line,
+					'url'			=> $line,
+					'title'			=> $line
+				);
+			}
 		}
 
 		// return original data untouched
@@ -374,26 +389,92 @@ class Click_ft extends EE_Fieldtype {
 	 * @param 	string 	Any tagdata
 	 * @return 	string 	The formatted link
 	 */
-	function replace_tag($data, $params = array(), $tagdata = FALSE)
+	function replace_tag($data = '', $params = array(), $tagdata = FALSE)
 	{
 		if ( $data == '' )
 		{
 			return;
 		}
 
-		if ( ! $this->dataParts )
+		// set our per-fieldtype options
+		$options = new Click_ft_options($this->settings);
+
+		// if has tagdata and allowed to show multiple...
+		if($tagdata && $options->is_yes('field_allow_multiple'))
 		{
-			$data = $this->pre_process($data);
+			// prepare for {switch} and {count} tags
+			$this->_prep_iterators($tagdata);
+
+			// prefix?
+			$prefix = (isset($params['var_prefix']) && $params['var_prefix']) ? $params['var_prefix'] . ':' : '';
+
+			// limit?
+			$limit = count($this->dataParts);
+			$limit = (isset($params['limit']) && $params['limit'] < $limit) ? $params['limit'] : $limit;
+			$count = 0;
+
+			$return = '';
+			foreach($this->dataParts as $key => $value)
+			{
+				// copy $tagdata
+				$click_tagdata = $tagdata;
+
+				// simple var swaps
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'click', $this->_replace_tag($key), $click_tagdata);
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'url', $this->_replace_url($key), $click_tagdata);
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'text', $this->_replace_text($key), $click_tagdata);
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'title', $this->_replace_title($key), $click_tagdata);
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'original', $this->_replace_original($key), $click_tagdata);
+
+				// parse total
+				$click_tagdata = $this->EE->TMPL->swap_var_single($prefix . 'total', $this->replace_total(), $click_tagdata);
+
+				// parse {switch} and {count} tags
+				$this->_parse_iterators($click_tagdata);
+
+				// append to our return string
+				$return .= $click_tagdata;
+
+				// have we reached our limit?
+				$count++;
+				if($count == $limit)
+				{
+					break;
+				}
+			}
+
+			if (isset($params['backspace']) && $params['backspace'])
+			{
+				$return = substr($return, 0, -$params['backspace']);
+			}
+
+			return $return;
+		}
+		// if a single tag, just pluck off the first dataParts array item
+		else
+		{
+			return $this->_replace_tag(0);
+		}
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Create and return a fully-rendered link
+	 *
+	 * @param 	integer Key of $this->dataParts[] to return
+	 * @return 	string 	The formatted link
+	 */
+	function _replace_tag($index = 0)
+	{
+		$result = "<a href=\"" . $this->dataParts[$index]['url'] . "\"";
+
+		if ( isset($this->dataParts[$index]['title']) )
+		{
+			$result .=  " title=\"" . $this->dataParts[$index]['title'] . "\"";
 		}
 
-		$result = "<a href=\"" . $this->dataParts['url'] . "\"";
-
-		if ( isset($this->dataParts['title']) )
-		{
-			$result .=  " title=\"" . $this->dataParts['title'] . "\"";
-		}
-
-		$result .= ">" . $this->dataParts['link_text'] . "</a>";
+		$result .= ">" . $this->dataParts[$index]['link_text'] . "</a>";
 
 		return $result;
 	}
@@ -401,7 +482,131 @@ class Click_ft extends EE_Fieldtype {
 
 
 	/**
-	 * Parse any template tag modifiers
+	 * Returns the first link in the field
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The first link in the field
+	 */
+	function replace_first($data = '', $params = array(), $tagdata = FALSE, $modifier = 'tag')
+	{
+		if ( $data == '' )
+		{
+			return '';
+		}
+
+		// build our method
+		$method = '_replace_' . $modifier;
+
+		return $this->$method(0);
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Returns the last link in the field
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The last link in the field
+	 */
+	function replace_last($data = '', $params = array(), $tagdata = FALSE, $modifier = 'tag')
+	{
+		if ( $data == '' )
+		{
+			return '';
+		}
+
+		// build our method
+		$method = '_replace_' . $modifier;
+
+		return $this->$method(count($this->dataParts) - 1);
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Return an unordered list of links
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The unordered list of links
+	 */
+	function replace_ul($data = '', $params = array(), $tagdata = FALSE, $modifier = 'tag')
+	{
+		if ( $data == '' )
+		{
+			return '';
+		}
+
+		// build our method
+		$method = '_replace_' . $modifier;
+
+		$return = "<ul>";
+
+		foreach($this->dataParts as $key => $value)
+		{
+			$return .= "<li>" . $this->$method($key) . "</li>";
+		}
+
+		return $return .= "</ul>";
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Return an ordered list of links
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	string 	The ordered list of links
+	 */
+	function replace_ol($data = '', $params = array(), $tagdata = FALSE, $modifier = FALSE)
+	{
+		if ( $data == '' )
+		{
+			return '';
+		}
+
+		// build our method
+		$method = '_replace_' . $modifier;
+
+		$return = "<ol>";
+
+		foreach($this->dataParts as $key => $value)
+		{
+			$return .= "<li>" . $this->$method($key) . "</li>";
+		}
+
+		return $return .= "</ol>";
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Calculate the total lines in field
+	 *
+	 * @param 	string 	Data of fieldtype
+	 * @param 	array 	Array of tag parameters
+	 * @param 	string 	Any tagdata
+	 * @return 	integer	The number of lines in field
+	 */
+	function replace_total($data = '', $params = array(), $tagdata = FALSE)
+	{
+		if ( $data == '' )
+		{
+			return 0;
+		}
+
+		return count($this->dataParts);
+	}
+
+	/**
+	 * Parse any template tag modifiers that we haven't explicitly defined
 	 *
 	 * @param 	string 	Data of fieldtype
 	 * @param 	array 	Array of tag parameters
@@ -409,26 +614,39 @@ class Click_ft extends EE_Fieldtype {
 	 * @param 	string 	The tag modifier
 	 * @return 	string 	The contents of the requested modifier method
 	 */
-	function replace_tag_catchall($data, $params = array(), $tagdata = FALSE, $modifier)
+	function replace_tag_catchall($data = '', $params = array(), $tagdata = FALSE, $modifier = 'tag')
 	{
 		if ( $data == '' )
 		{
 			return;
 		}
 
-		$method = '_replace_' . $modifier;
-
-		if( ! method_exists($this, $method) )
+		// do we have two modifiers to parse?
+		if (strpos($modifier, ':'))
 		{
-			return $data;
-		}
+			list($meth, $mod) = explode(':', $modifier);
 
-		if ( ! $this->dataParts )
+			$method = 'replace_' . $meth;
+
+			if ( ! method_exists($this, $method))
+			{
+				return $data;
+			}
+
+			return $this->$method($data, $params, $tagdata, $mod);
+		}
+		else
 		{
-			$data = $this->pre_process($data);
-		}
+			$method = '_replace_' . $modifier;
 
-		return $this->$method($data, $params, $tagdata);
+			if( ! method_exists($this, $method) )
+			{
+				return $data;
+			}
+
+			// with field modifiers, only return first line
+			return $this->$method(0);
+		}
 	}
 	// --------------------------------------------------------------------
 
@@ -436,14 +654,12 @@ class Click_ft extends EE_Fieldtype {
 	/**
 	 * Parse template tag modifiers for URL data
 	 *
-	 * @param 	string 	Data of fieldtype
-	 * @param 	array 	Array of tag parameters
-	 * @param 	string 	Any tagdata
+	 * @param 	integer Key of $this->dataParts[] to return
 	 * @return 	string 	The URL part of the field content
 	 */
-	protected function _replace_url($data, $params = array(), $tagdata = FALSE)
+	protected function _replace_url($index = 0)
 	{
-		return $this->dataParts['url'];
+		return $this->dataParts[$index]['url'];
 	}
 	// --------------------------------------------------------------------
 
@@ -451,30 +667,25 @@ class Click_ft extends EE_Fieldtype {
 	/**
 	 * Parse template tag modifiers for Text data
 	 *
-	 * @param 	string 	Data of fieldtype
-	 * @param 	array 	Array of tag parameters
-	 * @param 	string 	Any tagdata
+	 * @param 	integer Key of $this->dataParts[] to return
 	 * @return 	string 	The Text part of the field content
 	 */
-	protected function _replace_text($data, $params = array(), $tagdata = FALSE)
+	protected function _replace_text($index = 0)
 	{
-		return $this->dataParts['link_text'];
+		return $this->dataParts[$index]['link_text'];
 	}
 	// --------------------------------------------------------------------
-
 
 
 	/**
 	 * Parse template tag modifiers for Alternative Title data
 	 *
-	 * @param 	string 	Data of fieldtype
-	 * @param 	array 	Array of tag parameters
-	 * @param 	string 	Any tagdata
+	 * @param 	integer Key of $this->dataParts[] to return
 	 * @return 	string 	The Title part of the field content
 	 */
-	protected function _replace_title($data, $params = array(), $tagdata = FALSE)
+	protected function _replace_title($index = 0)
 	{
-		return $this->dataParts['title'];
+		return $this->dataParts[$index]['title'];
 	}
 	// --------------------------------------------------------------------
 
@@ -482,14 +693,12 @@ class Click_ft extends EE_Fieldtype {
 	/**
 	 * Parse template tag modifiers for original fieldtype data
 	 *
-	 * @param 	string 	Data of fieldtype
-	 * @param 	array 	Array of tag parameters
-	 * @param 	string 	Any tagdata
+	 * @param 	integer Key of $this->dataParts[] to return
 	 * @return 	string 	The original field content
 	 */
-	protected function _replace_original($data, $params = array(), $tagdata = FALSE)
+	protected function _replace_original($index = 0)
 	{
-		return $data;
+		return $this->dataParts[$index]['original'];
 	}
 	// --------------------------------------------------------------------
 
@@ -502,7 +711,7 @@ class Click_ft extends EE_Fieldtype {
 	 * @param 	string 	Any tagdata
 	 * @return 	string 	The formatted link
 	 */
-	public function display_var_tag($data, $params = array(), $tagdata = FALSE)
+	public function display_var_tag($data = '', $params = array(), $tagdata = FALSE)
 	{
 		if ( ! $this->var_id )
 		{
@@ -512,6 +721,55 @@ class Click_ft extends EE_Fieldtype {
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 	// --------------------------------------------------------------------
+
+
+	/**
+	 * Prep Iterators (borrowed from P&T Field Pack)
+	 */
+	protected function _prep_iterators(&$tagdata)
+	{
+		// find {switch} tags
+		$this->_switches = array();
+		$tagdata = preg_replace_callback('/'.LD.'switch\s*=\s*([\'\"])([^\1]+)\1'.RD.'/sU', array(&$this, '_get_switch_options'), $tagdata);
+
+		$this->_count_tag = 'count';
+		$this->_iterator_count = 0;
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Get Switch Options (borrowed from P&T Field Pack)
+	 */
+	protected function _get_switch_options($match)
+	{
+		$marker = LD.'SWITCH['.$this->EE->functions->random('alpha', 8).']SWITCH'.RD;
+		$this->_switches[] = array('marker' => $marker, 'options' => explode('|', $match[2]));
+		return $marker;
+	}
+	// --------------------------------------------------------------------
+
+
+	/**
+	 * Parse Iterators (borrowed from P&T Field Pack)
+	 */
+	protected function _parse_iterators(&$tagdata)
+	{
+		// {switch} tags
+		foreach($this->_switches as $i => $switch)
+		{
+			$option = $this->_iterator_count % count($switch['options']);
+			$tagdata = str_replace($switch['marker'], $switch['options'][$option], $tagdata);
+		}
+
+		// update the count
+		$this->_iterator_count++;
+
+		// {count} tags
+		$tagdata = $this->EE->TMPL->swap_var_single($this->_count_tag, $this->_iterator_count, $tagdata);
+	}
+	// --------------------------------------------------------------------
+
 }
 
 /* End of file ft.click.php */

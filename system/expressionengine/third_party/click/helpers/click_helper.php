@@ -14,6 +14,43 @@
 
 
 /**
+ * Borrowed (and butchered) from Markdown.php
+ */
+ if ( ! function_exists('click_doAnchors') )
+ {
+ 	function click_doAnchors($text = '')
+ 	{
+		# [link text](url "optional title")
+		preg_match('{
+			(				# wrap whole match in $1
+			  \[
+				((?>[^\[\]]+|\[\])*)	# link text = $2
+			  \]
+			  \(			# literal paren
+				[ \n]*
+				(?:
+					<(.+?)>	# href = $3
+				|
+					((?>[^()\s]+|\((?>\)))*)	# href = $4
+				)
+				[ \n]*
+				(			# $5
+				  ([\'"])	# quote char = $6
+				  (.*?)		# Title = $7
+				  \6		# matching quote
+				  [ \n]*	# ignore any spaces/tabs between closing quote and )
+				)?			# title is optional
+			  \)
+			)
+			}xs', $text, $matches);
+
+		return $matches;
+ 	}
+ }
+// --------------------------------------------------------------------
+
+
+/**
  * Borrowed from Markdown.php
  */
 if ( ! function_exists('click_encodeAttribute'))
