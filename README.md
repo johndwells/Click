@@ -6,6 +6,14 @@ A simple ExpressionEngine 2.x Fieldtype for creating links using [Markdown](http
 * Version 0.9.0 (beta)
 * [Full Documentation](https://github.com/johndwells/Click)
 
+## At a glance
+
+* Hyperlinks without HTML
+* Single or multiple links per field
+* Full control over output
+* Low Variables compatible
+* Matrix compatible
+
 ---
 
 # Introduction
@@ -46,8 +54,8 @@ Or actually, even this:
 
 	{my_click_field:ul}
 
-
 ---
+
 
 # Installation
 
