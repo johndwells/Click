@@ -589,7 +589,7 @@ class Click_ft extends EE_Fieldtype {
 	 * @param 	string 	Any tagdata
 	 * @return 	string 	The ordered list of links
 	 */
-	function replace_ol($data = '', $params = array(), $tagdata = FALSE, $modifier = FALSE)
+	function replace_ol($data = '', $params = array(), $tagdata = FALSE, $modifier = 'tag')
 	{
 		if ( $data == '' )
 		{
