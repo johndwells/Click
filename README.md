@@ -86,17 +86,6 @@ When ticked, the custom field will allow for multiple links, each separated by a
 
 The following tags are available for your Click field within `{exp:channel:entries}` tag pairs.
 
-## Single Tag
-
-Return the field as a fully formatted &lt;A&gt; link tag:
-
-	{my_click_field}
-	
-	// renders something like:
-	<a href="http:domain.com" title="Alternative Title">Link Text</a>
-
-**Note: In the case where multiple links are allowed for the field, the Single Tag will only return the first link.**
-
 ## Tag Pair
 
 Click's tag pair is used to iterate & display multiple links, in the case where multiple links are enabled.
@@ -155,55 +144,68 @@ Returns the URL portion of the &lt;A&gt; link.
 
 	{my_click_field}{url}, {/my_click_field}
 
-## :total Tag
+## Single Tags
+
+### Primary Tag
+
+When Click is configured to only allow a single link, returning the fully formatted &lt;A&gt; link is as simple as:
+
+	{my_click_field}
+	
+	// renders something like:
+	<a href="http:domain.com" title="Alternative Title">Link Text</a>
+
+**Note: In the case where multiple links are allowed for the field, the Primary Tag will only return the first link.**
+
+### :total Tag
 
 Returns the total number of links.
 
 	{my_click_field:total}
 
-## :first Tag
+### :first Tag
 
 In the case where multiple links are allowed for a field, this will return the first link tag:
 
 	{my_click_field:first}
 
-## :last Tag
+### :last Tag
 
 In the case where multiple links are allowed for a field, this will return the last link tag:
 
 	{my_click_field:last}
 
-## :ul Tag
+### :ul Tag
 
 Return an automatically-generated unordered list of links.
 
 	{my_click_field:ul}
 
-## :ol Tag
+### :ol Tag
 
 Return an automatically-generated ordered list of links.
 
 	{my_click_field:ol}
 
-## :url Tag
+### :url Tag
 
 Returns only the URL of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
 
 	{my_click_field:url}
 
-## :text Tag
+### :text Tag
 
 Returns only the readable Text part of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
 
 	{my_click_field:text}
 
-## :title Tag
+### :title Tag
 
 Returns the Alternative title part of the &lt;A&gt; link. In the case where multiple links are allowed, will only return the first.
 
 	{my_click_field:title}
 
-## :original Tag
+### :original Tag
 
 Returns the original, unformatted contents of the entire custom field.
 
